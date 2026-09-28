@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>GameVault</title>
+
+<style>
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background: #0b0d12;
+    color: white;
+    min-height: 100vh;
+}
+
+/* HEADER */
+header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(11,13,18,0.95);
+    border-bottom: 1px solid #252936;
+    backdrop-filter: blur(10px);
+}
+
+.navbar {
+    max-width: 1400px;
+    margin: auto;
+    padding: 18px 25px;
+    display: flex;
+    align-items: center;
+    gap: 25px;
+}
+
+.logo {
+    font-size: 26px;
+    font-weight: 900;
+    white-space: nowrap;
+}
+
+.logo span {
+    color: #6c63ff;
+}
+
+.search {
+    flex: 1;
+    position: relative;
+}
+
+.search input {
+    width: 100%;
+    padding: 14px 20px;
+    border-radius: 12px;
+    border: 1px solid #303442;
+    background: #171a22;
+    color: white;
+    outline: none;
+    font-size: 15px;
+}
+
+.search input:focus {
+    border-color: #6c63ff;
+    box-shadow: 0 0 0 3px rgba(108,99,255,.15);
+}
+
+.favorite-top {
+    background: #171a22;
+    border: 1px solid #303442;
+    color: white;
+    padding: 12px 16px;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.favorite-top:hover {
+    background: #222633;
+}
+
+/* HERO */
+.hero {
+    max-width: 1400px;
+    margin: 35px auto 20px;
+    padding: 45px 30px;
+    border-radius: 20px;
+    background:
+        radial-gradient(circle at 80% 20%, rgba(108,99,255,.35), transparent 35%),
+        linear-gradient(135deg, #171a28, #10121a);
+    border: 1px solid #292d3a;
+}
+
+.hero h1 {
+    font-size: clamp(35px, 5vw, 65px);
+    margin-bottom: 12px;
+}
+
+.hero h1 span {
+    color: #6c63ff;
+}
+
+.hero p {
+    color: #a9adba;
+    font-size: 17px;
+    max-width: 650px;
+    line-height: 1.6;
+}
+
+/* CATEGORIES */
+.categories {
+    max-width: 1400px;
+    margin: 25px auto;
+    padding: 0 25px;
+}
+
+.categories h2 {
+    margin-bottom: 15px;
+}
+
+.category-list {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    padding-bottom: 8px;
+}
+
+.category {
+    flex: 0 0 auto;
+    padding: 10px 16px;
+    background: #171a22;
+    border: 1px solid #2c3040;
+    border-radius: 10px;
+    color: #c5c8d2;
+    cursor: pointer;
+    transition: .2s;
+}
+
+.category:hover,
+.category.active {
+    background: #6c63ff;
+    border-color: #6c63ff;
+    color: white;
+}
+
+/* SECTIONS */
+.section {
+    max-width: 1400px;
+    margin: 35px auto;
+    padding: 0 25px;
+}
+
+.section-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 18px;
+}
+
+.section-title h2 {
+    font-size: 24px;
+}
+
+.game-count {
+    color: #858a99;
+    font-size: 14px;
+}
+
+/* GAME GRID */
+.games {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+    gap: 18px;
+}
+
+.game-card {
+    background: #151821;
+    border: 1px solid #282c39;
+    border-radius: 14px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform .2s, border-color .2s, box-shadow .2s;
+    position: relative;
+}
+
+.game-card:hover {
+    transform: translateY(-5px);
+    border-color: #6c63ff;
+    box-shadow: 0 10px 35px rgba(0,0,0,.35);
+}
+
+.game-image {
+    height: 125px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 50px;
+    background: linear-gradient(135deg, #22263a, #171923);
+}
+
+.game-info {
+    padding: 13px;
+}
+
+.game-info h3 {
+    font-size: 16px;
+    margin-bottom: 6px;
+}
+
+.game-info p {
+    color: #858a99;
+    font-size: 13px;
+}
+
+.favorite {
+    position: absolute;
+    top: 9px;
+    right: 9px;
+    width: 32px;
+    height: 32px;
+    border: none;
+    border-radius: 50%;
+    background: rgba(0,0,0,.6);
+    color: white;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.favorite.saved {
+    color: #ffd84d;
+}
+
+/* NO RESULTS */
+.no-results {
+    text-align: center;
+    padding: 60px 20px;
+    color: #858a99;
+    display: none;
+}
+
+/* FOOTER */
+footer {
+    border-top: 1px solid #252936;
+    margin-top: 70px;
+    padding: 35px;
+    text-align: center;
+    color: #737887;
+}
+
+/* MOBILE */
+@media (max-width: 700px) {
+    .navbar {
+        flex-wrap: wrap;
+    }
+
+    .search {
+        order: 3;
+        flex-basis: 100%;
+    }
+
+    .hero {
+        margin: 20px 15px;
+        padding: 35px 22px;
+    }
+
+    .section,
+    .categories {
+        padding: 0 15px;
+    }
+
+    .games {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+    }
+
+    .game-image {
+        height: 100px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <div class="navbar">
+
+        <div class="logo">
+            Game<span>Vault</span>
+        </div>
+
+        <div class="search">
+            <input
+                id="searchInput"
+                type="text"
+                placeholder="Search games..."
+                autocomplete="off"
+            >
+        </div>
+
+        <button class="favorite-top" onclick="showFavorites()">
+            ⭐ Favorites
+        </button>
+
+    </div>
+</header>
+
+
+<main>
+
+    <section class="hero">
+        <h1>Play <span>Games.</span></h1>
+
+        <p>
+            Discover games, search through categories,
+            save your favorites, and find something new to play.
+        </p>
+    </section>
+
+
+    <section class="categories">
+
+        <h2>Categories</h2>
+
+        <div class="category-list">
+
+            <button class="category active" onclick="filterCategory('All', this)">
+                All
+            </button>
+
+            <button class="category" onclick="filterCategory('Action', this)">
+                Action
+            </button>
+
+            <button class="category" onclick="filterCategory('Arcade', this)">
+                Arcade
+            </button>
+
+            <button class="category" onclick="filterCategory('Racing', this)">
+                Racing
+            </button>
+
+            <button class="category" onclick="filterCategory('Sports', this)">
+                Sports
+            </button>
+
+            <button class="category" onclick="filterCategory('Puzzle', this)">
+                Puzzle
+            </button>
+
+            <button class="category" onclick="filterCategory('Strategy', this)">
+                Strategy
+            </button>
+
+            <button class="category" onclick="filterCategory('Adventure', this)">
+                Adventure
+            </button>
+
+            <button class="category" onclick="filterCategory('Simulator', this)">
+                Simulator
+            </button>
+
+            <button class="category" onclick="filterCategory('Platformer', this)">
+                Platformer
+            </button>
+
+        </div>
+
+    </section>
+
+
+    <section class="section">
+
+        <div class="section-title">
+            <h2>🔥 Popular Games</h2>
+            <div class="game-count" id="gameCount"></div>
+        </div>
+
+        <div class="games" id="gameGrid"></div>
+
+        <div class="no-results" id="noResults">
+            <h2>No games found</h2>
+            <p>Try a different search or category.</p>
+        </div>
+
+    </section>
+
+</main>
+
+
+<footer>
+    GameVault • Built with HTML, CSS & JavaScript
+</footer>
+
+
+<script>
+
+const games = [
+
+    {
+        name: "Neon Racer",
+        category: "Racing",
+        icon: "🏎️"
+    },
+
+    {
+        name: "Space Defender",
+        category: "Action",
+        icon: "🚀"
+    },
+
+    {
+        name: "Block Puzzle",
+        category: "Puzzle",
+        icon: "🧩"
+    },
+
+    {
+        name: "Basketball Pro",
+        category: "Sports",
+        icon: "🏀"
+    },
+
+    {
+        name: "Monster Quest",
+        category: "Adventure",
+        icon: "👾"
+    },
+
+    {
+        name: "Tower Defense",
+        category: "Strategy",
+        icon: "🏰"
+    },
+
+    {
+        name: "Pixel Runner",
+        category: "Platformer",
+        icon: "🏃"
+    },
+
+    {
+        name: "City Driver",
+        category: "Simulator",
+        icon: "🚗"
+    },
+
+    {
+        name: "Alien Attack",
+        category: "Action",
+        icon: "👽"
+    },
+
+    {
+        name: "Speed Racer",
+        category: "Racing",
+        icon: "🏁"
+    },
+
+    {
+        name: "Soccer Stars",
+        category: "Sports",
+        icon: "⚽"
+    },
+
+    {
+        name: "Dungeon Run",
+        category: "Adventure",
+        icon: "⚔️"
+    },
+
+    {
+        name: "Chess Master",
+        category: "Strategy",
+        icon: "♟️"
+    },
+
+    {
+        name: "Fruit Catch",
+        category: "Arcade",
+        icon: "🍎"
+    },
+
+    {
+        name: "Ninja Jump",
+        category: "Platformer",
+        icon: "🥷"
+    },
+
+    {
+        name: "Space Race",
+        category: "Racing",
+        icon: "🛸"
+    },
+
+    {
+        name: "Memory Match",
+        category: "Puzzle",
+        icon: "🧠"
+    },
+
+    {
+        name: "Zombie Survival",
+        category: "Action",
+        icon: "🧟"
+    },
+
+    {
+        name: "Golf Challenge",
+        category: "Sports",
+        icon: "⛳"
+    },
+
+    {
+        name: "Island Explorer",
+        category: "Adventure",
+        icon: "🏝️"
+    }
+
+];
+
+
+let currentCategory = "All";
+let favorites = JSON.parse(localStorage.getItem("favorites")) || [];
+
+
+const grid = document.getElementById("gameGrid");
+const searchInput = document.getElementById("searchInput");
+const gameCount = document.getElementById("gameCount");
+const noResults = document.getElementById("noResults");
+
+
+function displayGames() {
+
+    const search = searchInput.value.toLowerCase();
+
+    const filtered = games.filter(game => {
+
+        const matchesSearch =
+            game.name.toLowerCase().includes(search);
+
+        const matchesCategory =
+            currentCategory === "All" ||
+            game.category === currentCategory;
+
+        return matchesSearch && matchesCategory;
+
+    });
+
+
+    grid.innerHTML = "";
+
+
+    filtered.forEach(game => {
+
+        const isFavorite =
+            favorites.includes(game.name);
+
+
+        const card = document.createElement("div");
+
+        card.className = "game-card";
+
+
+        card.innerHTML = `
+
+            <button
+                class="favorite ${isFavorite ? "saved" : ""}"
+                onclick="toggleFavorite(event, '${game.name}')">
+                ★
+            </button>
+
+            <div class="game-image">
+                ${game.icon}
+            </div>
+
+            <div class="game-info">
+
+                <h3>${game.name}</h3>
+
+                <p>${game.category}</p>
+
+            </div>
+
+        `;
+
+
+        card.onclick = function() {
+
+            if (event.target.classList.contains("favorite")) {
+                return;
+            }
+
+            openGame(game);
+
+        };
+
+
+        grid.appendChild(card);
+
+    });
+
+
+    gameCount.textContent =
+        filtered.length + " games";
+
+
+    noResults.style.display =
+        filtered.length === 0 ? "block" : "none";
+
+}
+
+
+function filterCategory(category, button) {
+
+    currentCategory = category;
+
+
+    document
+        .querySelectorAll(".category")
+        .forEach(btn => btn.classList.remove("active"));
+
+
+    button.classList.add("active");
+
+
+    displayGames();
+
+}
+
+
+searchInput.addEventListener("input", displayGames);
+
+
+function toggleFavorite(event, name) {
+
+    event.stopPropagation();
+
+
+    if (favorites.includes(name)) {
+
+        favorites =
+            favorites.filter(game => game !== name);
+
+    } else {
+
+        favorites.push(name);
+
+    }
+
+
+    localStorage.setItem(
+        "favorites",
+        JSON.stringify(favorites)
+    );
+
+
+    displayGames();
+
+}
+
+
+function showFavorites() {
+
+    currentCategory = "Favorites";
+
+
+    document
+        .querySelectorAll(".category")
+        .forEach(btn => btn.classList.remove("active"));
+
+
+    const filtered =
+        games.filter(game =>
+            favorites.includes(game.name)
+        );
+
+
+    grid.innerHTML = "";
+
+
+    filtered.forEach(game => {
+
+        const card = document.createElement("div");
+
+        card.className = "game-card";
+
+
+        card.innerHTML = `
+
+            <button
+                class="favorite saved"
+                onclick="toggleFavorite(event, '${game.name}')">
+                ★
+            </button>
+
+            <div class="game-image">
+                ${game.icon}
+            </div>
+
+            <div class="game-info">
+                <h3>${game.name}</h3>
+                <p>${game.category}</p>
+            </div>
+
+        `;
+
+
+        grid.appendChild(card);
+
+    });
+
+
+    gameCount.textContent =
+        filtered.length + " favorites";
+
+
+    noResults.style.display =
+        filtered.length === 0 ? "block" : "none";
+
+}
+
+
+function openGame(game) {
+
+    alert(
+        game.name +
+        " is ready to be connected to its game page!"
+    );
+
+}
+
+
+displayGames();
+
+</script>
+
+</body>
+</html>
